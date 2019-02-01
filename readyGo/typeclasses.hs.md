@@ -104,16 +104,60 @@
         ghci> read "(3, 'a')" :: (Int, Char)  
         result : (3, 'a')
         
+### Enum 的成员都是连续的类型 -- 也就是可枚举
+        Enum 类存在的主要好处就在于我们可以在 Range 中用到它的成员类型：
+        每个值都有后继子 (successer) 和前置子 (predecesor)，
+        分别可以通过 succ 函数和 pred 函数得到。
+        该 Typeclass 包含的类型有：(), Bool, Char, Ordering, Int, Integer, Float 和 Double
         
+        ghci> ['a'..'e']  
+        result : "abcde" 
         
+        ghci> [LT .. GT]  
+        result : [LT,EQ,GT]  
         
+        ghci> [3 .. 5]  
+        result : [3,4,5]  
         
+        ghci> succ 'B'  
+        result : 'C'
         
+### Bounded 的成员都有一个上限和下限
+        ghci> minBound :: Int  
+        result : -2147483648  
         
+        ghci> maxBound :: Char  
+        result : '\1114111'  
         
+        ghci> maxBound :: Bool  
+        result : True  
         
+        ghci> minBound :: Bool  
+        result : False
         
+        minBound 和 maxBound 函数很有趣，它们的类型都是 (Bounded a) => a。可以说，它们都是多态常量。
+        如果其中的项都属于 Bounded Typeclass，那么该 Tuple 也属于 Bounded
+        ghci> maxBound :: (Bool, Int, Char)  
+        result : (True,2147483647,'\1114111')
         
+### Num 是表示数字的 Typeclass，它的成员类型都具有数字的特征。检查一个数字的类型：
+        ghci> :t (*)  
+        result : (*) :: (Num a) => a -> a -> a
+        
+### Integral 同样是表示数字的 Typeclass。
+        Num 包含所有的数字：实数和整数。
+        而 Integral 仅包含整数，其中的成员类型有 Int 和 Integer
+        
+### Floating 仅包含浮点类型：Float 和 Double
+        有个函数在处理数字时会非常有用，它便是 fromIntegral。
+        其类型声明为： fromIntegral :: (Num b, Integral a) => a -> b。
+        从中可以看出，它取一个整数做参数并回传一个更加通用的数字，这在同时处理整数和浮点时会尤为有用。
+        举例来说，length 函数的类型声明为：length :: [a] -> Int，
+        而非更通用的形式，
+        如 length :: (Num b) => [a] -> b。
+        这应该是历史原因吧，反正我觉得挺蠢。
+        如果取了一个 List 长度的值再给它加 3.2 就会报错，因为这是将浮点数和整数相加。
+        面对这种情况，我们就用 fromIntegral (length [1,2,3,4]) + 3.2 来解决
         
         
         
